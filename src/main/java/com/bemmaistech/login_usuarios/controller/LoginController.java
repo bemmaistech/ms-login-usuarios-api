@@ -33,5 +33,6 @@ public class LoginController {
     @PutMapping("/alterar-senha")
     public ResponseEntity<String> alterarSenha(@RequestBody @Valid LoginAlterarSenhaRequestDTO params) {
         return ResponseEntity.ok().body(service.alterarSenha(params));
+
     }
 }
