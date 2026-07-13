@@ -24,7 +24,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("https://ms-login-usuarios-react-ednlnb3gy-bemmastech.vercel.app/"));
+        config.setAllowedOriginPatterns(List.of(
+                "https://ms-login-usuarios-react-*-bemmastech.vercel.app"
+        ));
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
