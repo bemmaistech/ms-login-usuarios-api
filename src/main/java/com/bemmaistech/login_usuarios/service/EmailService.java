@@ -1,44 +1,20 @@
 package com.bemmaistech.login_usuarios.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
-    private final String fromEmail;
+    private final BrevoEmailProvider brevoEmailProvider;
 
-    public EmailService(JavaMailSender mailSender,
-                        @Value("${mail.from}") String fromEmail) {
-        this.mailSender = mailSender;
-        this.fromEmail = fromEmail;
+    public EmailService(BrevoEmailProvider brevoEmailProvider) {
+        this.brevoEmailProvider = brevoEmailProvider;
     }
 
     public void enviarCodigoConfirmacao(String destino, String codigo) {
         String assunto = "Confirme seu e-mail | Bem Mais Tech";
         String html = montarTemplateConfirmacao(codigo);
-        enviarEmailHtml(destino, assunto, html);
-    }
-
-    private void enviarEmailHtml(String destino, String assunto, String htmlConteudo) {
-        try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-
-            helper.setFrom(fromEmail);
-            helper.setTo(destino);
-            helper.setSubject(assunto);
-            helper.setText(htmlConteudo, true);
-
-            mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Erro ao montar e-mail HTML", e);
-        }
+        brevoEmailProvider.enviarHtml(destino, assunto, html);
     }
 
     private String montarTemplateConfirmacao(String codigo) {
