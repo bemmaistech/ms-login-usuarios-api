@@ -2,6 +2,7 @@ package com.bemmaistech.login_usuarios.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -10,9 +11,12 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final String fromEmail;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(JavaMailSender mailSender,
+                        @Value("${mail.from}") String fromEmail) {
         this.mailSender = mailSender;
+        this.fromEmail = fromEmail;
     }
 
     public void enviarCodigoConfirmacao(String destino, String codigo) {
@@ -26,6 +30,7 @@ public class EmailService {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
 
+            helper.setFrom(fromEmail);
             helper.setTo(destino);
             helper.setSubject(assunto);
             helper.setText(htmlConteudo, true);
