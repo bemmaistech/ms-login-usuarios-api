@@ -1,23 +1,70 @@
 package com.bemmaistech.login_usuarios.service;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmailService {
 
-    private final BrevoEmailProvider brevoEmailProvider;
+    private static final String BREVO_BASE_URL = "https://api.brevo.com/v3";
 
-    public EmailService(BrevoEmailProvider brevoEmailProvider) {
-        this.brevoEmailProvider = brevoEmailProvider;
+    private final RestClient restClient;
+    private final String fromEmail;
+
+    public EmailService(
+            @Value("${brevo.api.key}") String apiKey,
+            @Value("${brevo.from.email}") String fromEmail
+    ) {
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new IllegalArgumentException("BREVO_API_KEY environment variable is required but not set");
+        }
+        if (fromEmail == null || fromEmail.isBlank()) {
+            throw new IllegalArgumentException("BREVO_FROM_EMAIL environment variable is required but not set");
+        }
+
+        this.restClient = RestClient.builder()
+                .baseUrl(BREVO_BASE_URL)
+                .defaultHeader("api-key", apiKey.trim())
+                .build();
+        this.fromEmail = fromEmail.trim();
     }
 
     public void enviarCodigoConfirmacao(String destino, String codigo) {
         String assunto = "Confirme seu e-mail | Bem Mais Tech";
         String html = montarTemplateConfirmacao(codigo);
-        brevoEmailProvider.enviarHtml(destino, assunto, html);
+        enviarEmailHtml(destino, assunto, html);
     }
 
-    private String montarTemplateConfirmacao(String codigo) {
+    void enviarEmailHtml(String destino, String assunto, String htmlConteudo) {
+        String emailDestino = normalizarEmail(destino, "destino");
+        String emailRemetente = normalizarEmail(fromEmail, "from");
+
+        Map<String, Object> payload = Map.of(
+                "sender", Map.of("name", "Bem Mais Tech", "email", emailRemetente),
+                "to", List.of(Map.of("email", emailDestino)),
+                "subject", assunto,
+                "htmlContent", htmlConteudo
+        );
+
+        ResponseEntity<String> response = restClient.post()
+                .uri("/smtp/email")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(payload)
+                .retrieve()
+                .toEntity(String.class);
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Erro ao enviar e-mail pelo Brevo: status=" + response.getStatusCode().value());
+        }
+    }
+
+    String montarTemplateConfirmacao(String codigo) {
         String html = """
                 <!DOCTYPE html>
                 <html lang="pt-BR">
@@ -61,5 +108,18 @@ public class EmailService {
                 """;
 
         return html.replace("{{CODIGO}}", codigo);
+    }
+
+    private String normalizarEmail(String email, String campo) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("E-mail inválido no campo '" + campo + "'");
+        }
+
+        String valor = email.trim();
+        if (!valor.contains("@") || !valor.contains(".")) {
+            throw new IllegalArgumentException("E-mail inválido no campo '" + campo + "': " + email);
+        }
+
+        return valor;
     }
 }
