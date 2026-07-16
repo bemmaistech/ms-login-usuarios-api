@@ -43,9 +43,9 @@ public class ConfirmarEmailService {
 
         ConfirmacaoEmail confirmacaoEmail = mapper.toEntity(dto.getEmail(), codigo, expiraEm, dataCriacao);
 
-        repository.save(confirmacaoEmail);
-
         service.enviarCodigoConfirmacao(dto.getEmail(), codigo);
+
+        repository.save(confirmacaoEmail);
 
         return "Email enviado com sucesso!";
     }
