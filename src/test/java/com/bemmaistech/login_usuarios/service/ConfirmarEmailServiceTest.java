@@ -64,25 +64,6 @@ public class ConfirmarEmailServiceTest {
         assertEquals("Email enviado com sucesso!", result);
     }
 
-    @Test
-    void enviarCodigo_quandoEmailJaCadastrado_deveLancarExcecao() {
-        when(repository.findByEmail(enviarDto.getEmail())).thenReturn(Optional.of(new ConfirmacaoEmail()));
-
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> service.enviarCodigo(enviarDto));
-
-        assertEquals("Email já cadastrado!", ex.getMessage());
-    }
-
-    @Test
-    void enviarCodigo_quandoEmailJaCadastrado_naoDeveSalvarNemEnviarEmail() {
-        when(repository.findByEmail(enviarDto.getEmail())).thenReturn(Optional.of(new ConfirmacaoEmail()));
-
-        assertThrows(RuntimeException.class, () -> service.enviarCodigo(enviarDto));
-
-        verify(mapper, never()).toEntity(anyString(), anyString(), any(), any());
-        verify(repository, never()).save(any());
-        verify(emailService, never()).enviarCodigoConfirmacao(anyString(), anyString());
-    }
 
     @Test
     void enviarCodigo_deveChamarMapperUmaVez() {

@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class LoginResponseDTO {
 
-        private String email;
+        private Long id;
 
         private String token;
 

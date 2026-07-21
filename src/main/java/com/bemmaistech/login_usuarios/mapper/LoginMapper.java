@@ -42,7 +42,7 @@ public class LoginMapper {
         }
 
         LoginResponseDTO response = new LoginResponseDTO();
-        response.setEmail(usuario.getEmail());
+        response.setId(usuario.getId());
         response.setToken(token);
 
         return response;

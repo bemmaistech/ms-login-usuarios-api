@@ -104,7 +104,6 @@ public class LoginMapperTest {
         LoginResponseDTO result = mapper.toLoginResponse(usuario, token);
 
         assertNotNull(result);
-        assertEquals("joao@teste.com", result.getEmail());
         assertEquals(token, result.getToken());
     }
 

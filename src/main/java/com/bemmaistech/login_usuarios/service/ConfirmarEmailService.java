@@ -30,7 +30,8 @@ public class ConfirmarEmailService {
     }
 
     public String enviarCodigo(EnviarCodigoRequestDTO dto) {
-        if (repository.findByEmail(dto.getEmail()).isPresent()) {
+        var emailLogin = loginRepository.findByEmail(dto.getEmail());
+        if (emailLogin.isPresent()) {
             throw new RuntimeException("Email já cadastrado!");
         }
 
@@ -44,7 +45,9 @@ public class ConfirmarEmailService {
         ConfirmacaoEmail confirmacaoEmail = mapper.toEntity(dto.getEmail(), codigo, expiraEm, dataCriacao);
 
         service.enviarCodigoConfirmacao(dto.getEmail(), codigo);
-
+        if(repository.findByEmail(dto.getEmail()).isPresent()){
+            repository.deleteByEmail(dto.getEmail());
+        }
         repository.save(confirmacaoEmail);
 
         return "Email enviado com sucesso!";

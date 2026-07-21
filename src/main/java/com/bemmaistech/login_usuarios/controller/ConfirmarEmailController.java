@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/confirmar-email")
+@RequestMapping("/auth/confirmar-email")
 public class ConfirmarEmailController {
 
     final ConfirmarEmailService service;

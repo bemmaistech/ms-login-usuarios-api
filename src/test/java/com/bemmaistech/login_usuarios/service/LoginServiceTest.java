@@ -145,7 +145,6 @@ public class LoginServiceTest {
         usuario.setSenha("hash");
 
         LoginResponseDTO responseDTO = new LoginResponseDTO();
-        responseDTO.setEmail(req.getEmail());
         responseDTO.setToken("jwt-token");
 
         when(repository.findByEmail(req.getEmail())).thenReturn(Optional.of(usuario));

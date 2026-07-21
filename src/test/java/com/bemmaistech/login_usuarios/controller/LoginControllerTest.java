@@ -94,7 +94,7 @@ class LoginControllerTest {
     @Test
     void login_deveRetornarStatus200() {
         LoginResponseDTO responseDTO = new LoginResponseDTO();
-        responseDTO.setEmail("cliente@teste.com");
+        responseDTO.setId(1L);
         responseDTO.setToken("jwt-token");
         when(service.login(any(LoginRequestDTO.class))).thenReturn(responseDTO);
 
@@ -106,7 +106,7 @@ class LoginControllerTest {
     @Test
     void login_deveRetornarBodyCorreto() {
         LoginResponseDTO responseDTO = new LoginResponseDTO();
-        responseDTO.setEmail("cliente@teste.com");
+        responseDTO.setId(1L);
         responseDTO.setToken("jwt-token");
         when(service.login(any(LoginRequestDTO.class))).thenReturn(responseDTO);
 

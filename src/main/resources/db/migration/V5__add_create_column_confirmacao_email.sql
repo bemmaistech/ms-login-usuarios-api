@@ -1,0 +1,3 @@
+ALTER TABLE confirmacao_email
+ADD COLUMN "create" BOOLEAN NOT NULL DEFAULT FALSE;
+
