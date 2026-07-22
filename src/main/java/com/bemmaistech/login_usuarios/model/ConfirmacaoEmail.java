@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "confirmacao_email")
+@Table(name = "tb_confirmacao_email")
 public class ConfirmacaoEmail {
 
     @Id
